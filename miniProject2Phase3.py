@@ -5,9 +5,9 @@ def phase3():
 	tweetsDB = db.DB()
 	termsDB = db.DB()
 	datesDB = db.DB()
-	tweetsDB.open('tw.idx',None,db.DB_HASH,db.DB_RDONLY)
-	termsDB.open('te.idx',None,db.DB_BTREE,db.DB_RDONLY)
-	datesDB.open('da.idx',None,db.DB_BTREE,db.DB_RDONLY)
+	tweetsDB.open('tw.idx',None,db.DB_HASH,db.DB_CREATE)
+	termsDB.open('te.idx',None,db.DB_BTREE,db.DB_CREATE)
+	datesDB.open('da.idx',None,db.DB_BTREE,db.DB_CREATE)
 	
 	while (True):
 		inp = input("Please enter a query or 'exit' to exit the program: ")
@@ -18,12 +18,10 @@ def phase3():
 		displayResults(results)
 	
 def parseAndSearch(query, termsDB, datesDB):
-	for expression in query.split():
-		results = []
-		if len(query) >= 4 and query[:4] == 'date':
-			results = searchDates(query[4:], datesDB)
-		else:
-			results = searchTerms(query, termsDB)
+	if len(query) >= 4 and query[:4] == 'date':
+		return searchDates(query[4:], datesDB)
+	else:
+		return searchTerms(query, termsDB)
 
 def searchTerms(query, termsDB):
 	partialMatch = False
@@ -43,11 +41,11 @@ def searchTerms(query, termsDB):
 		keys.append('t-' + query)
 		keys.append('n-' + query)
 		keys.append('l-' + query)
-		
+	
 	if partialMatch:
 		for key in keys:
-			key = key[:-1]
-			results.append(curs.get(b(key), db.DB_DBT_PARTIAL, dlen=length(key), doff=0))
+			key = key[:-1].encode('ascii','ignore')
+			results.append(curs.get(key, db.DB_DBT_PARTIAL, dlen=length(key), doff=0))
 			result = curs.next()
 			resultKey = result[0].decode('utf-8')
 			while len(resultKey) >= len(key) and resultKey[:len(key)] == key:
@@ -56,8 +54,8 @@ def searchTerms(query, termsDB):
 				resultKey = result[0].decode('utf-8')
 	else:
 		for key in keys:
-			results.append(curs.get(b(key)))
-			result = curs.next_dup()
+			key = key.encode('ascii','ignore')
+			result = curs.set(key)
 			while result:
 				results.append(result)
 				result = curs.next_dup()
@@ -73,7 +71,8 @@ def searchDates(query, datesDB):
 	else:
 		pass
 def displayResults(results):
-	pass
+	for result in results:
+		print(result)
 	
 if __name__ == "__main__":
 	phase3()

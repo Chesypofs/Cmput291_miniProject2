@@ -16,6 +16,7 @@ database.close()
 
 DATABASE = 'te.idx'
 database = db.DB()
+database.set_flags(db.DB_DUP)
 database.open(DATABASE, None, db.DB_BTREE, db.DB_CREATE)
 curs = database.cursor()
 f = open('terms.txt', 'r')
@@ -30,6 +31,7 @@ database.close()
 
 DATABASE = 'da.idx'
 database = db.DB()
+database.set_flags(db.DB_DUP)
 database.open(DATABASE, None, db.DB_BTREE, db.DB_CREATE)
 curs = database.cursor()
 f = open('dates.txt', 'r')
