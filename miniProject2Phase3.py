@@ -27,7 +27,7 @@ def parseAndSearch(query, termsDB, datesDB):
 		else:
 			results.append(searchTerms(expression, termsDB))
 	
-	# Compound expression
+	# Compound expression, need to aggregate the results
 	if len(query.split()) > 1:
 		# Keep only the ids that occur in each result set
 		# Go through each result in the first result set and check if it is in all the others
@@ -99,7 +99,14 @@ def searchDates(query, datesDB):
 		pass
 
 def getTweets(results, tweetsDB):
-	return(results)
+	tweets = []
+	curs = tweetsDB.cursor()
+	for result in results:
+		tw = curs.set(result[1])
+		if tw:
+			tweets.append(tw)
+	curs.close()
+	return tweets
 	
 def displayResults(results):
 	for result in results:
