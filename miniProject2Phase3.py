@@ -44,14 +44,15 @@ def searchTerms(query, termsDB):
 	
 	if partialMatch:
 		for key in keys:
+			skey = key[:-1]
 			key = key[:-1].encode('ascii','ignore')
-			results.append(curs.get(key, db.DB_DBT_PARTIAL, dlen=length(key), doff=0))
-			result = curs.next()
-			resultKey = result[0].decode('utf-8')
-			while len(resultKey) >= len(key) and resultKey[:len(key)] == key:
-				results.append(result)
-				result = curs.next()
+			result = curs.set_range(key)
+			if result:
 				resultKey = result[0].decode('utf-8')
+				while len(resultKey) >= len(skey) and resultKey[:len(key)] == skey:
+					results.append(result)
+					result = curs.next()
+					resultKey = result[0].decode('utf-8')
 	else:
 		for key in keys:
 			key = key.encode('ascii','ignore')
