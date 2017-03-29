@@ -15,14 +15,40 @@ def phase3():
 			break
 
 		results = parseAndSearch(inp, termsDB, datesDB)
-		displayResults(results)
+		tweets = getTweets(results, tweetsDB)
+		displayResults(tweets)
 	
 def parseAndSearch(query, termsDB, datesDB):
-	if len(query) >= 4 and query[:4] == 'date':
-		return searchDates(query[4:], datesDB)
+	results = []
+	finalResults = []	
+	for expression in query.split():
+		if len(expression) >= 4 and expression[:4] == 'date':
+			results.append(searchDates(expression[4:], datesDB))
+		else:
+			results.append(searchTerms(expression, termsDB))
+	
+	# Compound expression
+	if len(query.split()) > 1:
+		# Keep only the ids that occur in each result set
+		# Go through each result in the first result set and check if it is in all the others
+		# If it is then add it to the final result set
+		for result in results[0]:
+			foundAll = True
+			for resultSet in results[1:]:
+				found = False
+				for rslt in resultSet:
+					if result[1] == rslt[1]:
+						found = True
+						break
+				if not found:
+					foundAll = False
+					break
+			if foundAll:
+				finalResults.append(result)
+		return finalResults
 	else:
-		return searchTerms(query, termsDB)
-
+		return results[0]
+		
 def searchTerms(query, termsDB):
 	partialMatch = False
 	keys = []
@@ -71,6 +97,10 @@ def searchDates(query, datesDB):
 		pass
 	else:
 		pass
+
+def getTweets(results, tweetsDB):
+	return(results)
+	
 def displayResults(results):
 	for result in results:
 		print(result)
