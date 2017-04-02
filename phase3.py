@@ -102,10 +102,9 @@ def searchDates(query, datesDB):
 			print(key)
 			#key = bytes(key, 'utf-8')
 			key = key.encode('ascii','ignore')
-			result = curs.set(key)
-			print(result)
+
 			result = curs.set_range(key)
-			print(result)
+			#print(result)
 			while result:
 				results.append(result)
 				result = curs.next_dup()
@@ -113,13 +112,17 @@ def searchDates(query, datesDB):
 		keys.append(query[1:])
 		for key in keys:
 			key = key.encode('ascii','ignore')
+			print(key)
 			result = curs.set_range(key)
-			if curs.prev() is None:
+			print(result)
+			result = curs.prev()
+			if  result is None:
 				return results
 			else:
-				results.append(result)
-				while curs.prev() is not None:
+
+				while result is not None:
 					results.append(result)
+					result = curs.prev()
 	else:
 		keys.append(query[1:])
 		for key in keys:
