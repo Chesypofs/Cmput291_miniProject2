@@ -151,7 +151,6 @@ def searchDates(query, datesDB):
 					results.append(result)
 					result = curs.next()
 	curs.close()
-	print(results)
 	return results
 
 def getTweets(results, tweetsDB):
