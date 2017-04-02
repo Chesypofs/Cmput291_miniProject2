@@ -95,17 +95,22 @@ def searchDates(query, datesDB):
 	keys = []
 	results = []
 	curs = datesDB.cursor()
-	print(query[4])
-	if query[4] == ':':
-		keys.append( query[4:])
+
+	if query[0] == ':':
+		keys.append( query[1:])
 		for key in keys:
+			print(key)
+			#key = bytes(key, 'utf-8')
+			key = key.encode('ascii','ignore')
 			result = curs.set(key)
+			print(result)
 			while result:
 				results.append(result)
 				result = curs.next_dup()
-	elif query[4] == '<':
-		keys.append(query[4:])
+	elif query[0] == '<':
+		keys.append(query[1:])
 		for key in keys:
+			key = key.encode('ascii','ignore')
 			result = curs.set_range(key)
 			if curs.prev() is None:
 				return results
@@ -114,8 +119,9 @@ def searchDates(query, datesDB):
 				while curs.prev() is not None:
 					results.append(result)
 	else:
-		keys.append(query[4:])
+		keys.append(query[1:])
 		for key in keys:
+			key = key.encode('ascii','ignore')
 			result = curs.set_range(key)
 			if result:
 				results.append(result)
@@ -123,6 +129,7 @@ def searchDates(query, datesDB):
 					results.append(result)
 
 	curs.close()
+	print(results)
 	return results
 
 def getTweets(results, tweetsDB):
