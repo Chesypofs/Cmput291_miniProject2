@@ -104,6 +104,8 @@ def searchDates(query, datesDB):
 			key = key.encode('ascii','ignore')
 			result = curs.set(key)
 			print(result)
+			result = curs.set_range(key)
+			print(result)
 			while result:
 				results.append(result)
 				result = curs.next_dup()
