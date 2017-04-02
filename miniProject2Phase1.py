@@ -12,7 +12,7 @@ def phase1():
 			# write the tweets and dates dates
 			id = word[1][4:13]
 			tweetsFile.write(id + ':' + record)
-			date = word[2][12:23]
+			date = word[2][12:22]
 			datesFile.write(date + ':' + id + '\n')
 			
 			# remove the <text> tag
