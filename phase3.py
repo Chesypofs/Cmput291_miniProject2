@@ -58,15 +58,15 @@ def searchTerms(query, termsDB):
 		partialMatch = True
 
 	if len(query) >= 5 and query[:5] == 'text:':
-		keys.append('t-' + query[5:])
+		keys.append('t-' + query[5:].lower())
 	elif len(query) >= 5 and query[:5] == 'name:':
-		keys.append('n-' + query[5:])
+		keys.append('n-' + query[5:].lower())
 	elif len(query) >= 9 and query[:9] == 'location:':
-		keys.append('l-' + query[9:])
+		keys.append('l-' + query[9:].lower())
 	else:
-		keys.append('t-' + query)
-		keys.append('n-' + query)
-		keys.append('l-' + query)
+		keys.append('t-' + query.lower())
+		keys.append('n-' + query.lower())
+		keys.append('l-' + query.lower())
 
 	if partialMatch:
 		for key in keys:
