@@ -95,7 +95,7 @@ def searchDates(query, datesDB):
 	keys = []
 	results = []
 	curs = datesDB.cursor()
-
+	print(query[4])
 	if query[4] == ':':
 		keys.append( query[4:])
 		for key in keys:
@@ -107,20 +107,20 @@ def searchDates(query, datesDB):
 		keys.append(query[4:])
 		for key in keys:
 			result = curs.set_range(key)
-		if curs.prev() is None:
-		    return results
-		else:
-		    results.append(result)
-		    while curs.prev() is not None:
-			results.append(result)
+			if curs.prev() is None:
+				return results
+			else:
+				results.append(result)
+				while curs.prev() is not None:
+					results.append(result)
 	else:
-	     keys.append(query[4:])
-	     for key in keys:
-		     result = curs.set_range(key)
-		     if result :
-			      results.append(result)
-                     while curs.next() is not None:
-                             results.append(result)
+		keys.append(query[4:])
+		for key in keys:
+			result = curs.set_range(key)
+			if result:
+				results.append(result)
+				while curs.next() is not None:
+					results.append(result)
 
 	curs.close()
 	return results
