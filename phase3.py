@@ -56,7 +56,6 @@ def parseAndSearch(query, termsDB, datesDB):
 	else:
 		for index1 in range(len(results[0])):
 			foundDuplicate = False
-			print("DEBUG: ", results[0][index1])
 			for index2 in range(index1+1, len(results[0])):
 				if results[0][index1][1] == results[0][index2][1]:
 				   foundDuplicate = True
