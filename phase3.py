@@ -32,6 +32,7 @@ def parseAndSearch(query, termsDB, datesDB):
 		# Keep only the ids that occur in each result set
 		# Go through each result in the first result set and check if it is in all the others
 		# If it is then add it to the final result set
+		finalResultsTemp = []
 		for result in results[0]:
 			foundAll = True
 			for resultSet in results[1:]:
@@ -44,10 +45,24 @@ def parseAndSearch(query, termsDB, datesDB):
 					foundAll = False
 					break
 			if foundAll:
-				finalResults.append(result)
-		return finalResults
+				finalResultsTemp.append(result)
+		for index1 in range(len(finalResultsTemp)):
+			foundDuplicate = False
+			for index2 in range(index1+1, len(finalResultsTemp)):
+				if finalResultsTemp[index1][1] == finalResultsTemp[index2][1]:
+				   foundDuplicate = True
+			if not foundDuplicate:
+			   finalResults.append(finalResultsTemp[index1])
 	else:
-		return results[0]
+		for index1 in range(len(results[0])):
+			foundDuplicate = False
+			print("DEBUG: ", results[0][index1])
+			for index2 in range(index1+1, len(results[0])):
+				if results[0][index1][1] == results[0][index2][1]:
+				   foundDuplicate = True
+			if not foundDuplicate:
+			   finalResults.append(results[0][index1])
+	return finalResults
 
 def searchTerms(query, termsDB):
 	partialMatch = False
