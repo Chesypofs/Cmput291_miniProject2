@@ -25,7 +25,7 @@ def phase3():
 # Function parseAndSearch splits the query into individual expressions
 # and gets the query results for each expression from the searchDates
 # and searchTerms functions. Those results are then aggregated and
-# duplicates removed. 
+# duplicates removed.
 def parseAndSearch(query, termsDB, datesDB):
 	results = []
 	finalResults = []
@@ -125,7 +125,7 @@ def searchDates(query, datesDB):
 	keys = []
 	results = []
 	curs = datesDB.cursor()
-
+	#when input is 'date:year '/' month '/' day'
 	if query[0] == ':':
 		keys.append( query[1:])
 		for key in keys:
@@ -138,6 +138,7 @@ def searchDates(query, datesDB):
 			while result:
 				results.append(result)
 				result = curs.next_dup()
+	#when input is 'date<year '/' month '/' day'
 	elif query[0] == '<':
 		keys.append(query[1:])
 		for key in keys:
@@ -145,7 +146,7 @@ def searchDates(query, datesDB):
 
 			result = curs.set_range(key)
 
-			result = curs.prev()
+			result = curs.prev_nodup()#make sure the result is not including results when input was ':
 			if  result is None:
 				return results
 			else:
@@ -153,12 +154,13 @@ def searchDates(query, datesDB):
 				while result is not None:
 					results.append(result)
 					result = curs.prev()
+	#when input is 'date>year '/' month '/' day'
 	else:
 		keys.append(query[1:])
 		for key in keys:
 			key = key.encode('ascii','ignore')
 			result = curs.set_range(key)
-			result = curs.next()
+			result = curs.next_nodup()
 			if  result is None:
 				return results
 			else:
@@ -187,7 +189,7 @@ def displayResults(results):
 		words = result[1].decode('utf-8').split()
 		id = words[1][4:-5]
 		date = words[2][12:-13]
-		
+
 		# Find the beginning and end of the tweet text
 		# Get rid of the <text> tag
 		words[3] = words[3][6:]
@@ -199,10 +201,10 @@ def displayResults(results):
 				break
 			index_text = index_text + 1
 		text = " ".join(words[3:index_text+1])
-		
+
 		# Get the retweet count
 		retweet_count = words[index_text+1][15:-16]
-		
+
 		# Find the beginning and end of the tweet name
 		index_name_start = 0
 		index_name_end = 0
@@ -236,7 +238,7 @@ def displayResults(results):
 				break
 			index = index + 1
 		location = " ".join(words[index_location_start:index_location_end+1])
-		
+
 		# Find the beginning and end of the tweet description
 		index_description_start = 0
 		index_description_end = 0
@@ -253,7 +255,7 @@ def displayResults(results):
 				break
 			index = index + 1
 		description = " ".join(words[index_description_start:index_description_end+1])
-		
+
 		# Find the beginning and end of the tweet url
 		index_url_start = 0
 		index_url_end = 0
@@ -270,7 +272,7 @@ def displayResults(results):
 				break
 			index = index + 1
 		url = " ".join(words[index_url_start:index_url_end+1])
-		
+
 		print("##################################################################")
 		print("id: ", id)
 		print("date: ", date)
