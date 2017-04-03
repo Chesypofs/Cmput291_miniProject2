@@ -177,7 +177,7 @@ def getTweets(results, tweetsDB):
 	for result in results:
 		tw = curs.set(result[1])
 		if tw:
-			tweets.append([curs.get_recno(),tw])
+			tweets.append(tw)
 	curs.close()
 	return tweets
 
