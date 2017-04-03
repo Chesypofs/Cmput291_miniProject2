@@ -1,4 +1,4 @@
-# Cmput 291 Mini Project 2
+Cmput 291 Mini Project 2
 
 William Hodgson
 Irene Gao 
