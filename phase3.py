@@ -181,73 +181,91 @@ def getTweets(results, tweetsDB):
 	curs.close()
 	return tweets
 
+# Function displayResults prints out the results returned from the queries.
 def displayResults(results):
 	for result in results:
 		words = result[1].decode('utf-8').split()
 		id = words[1][4:-5]
 		date = words[2][12:-13]
 		
+		# Find the beginning and end of the tweet text
+		# Get rid of the <text> tag
 		words[3] = words[3][6:]
 		index_text = 3
 		for word in words[3:]:
 			if len(word) >= 7 and word[-7:] == '</text>':
+				# Get rid of the </text> tag
 				words[index_text] = words[index_text][:-7]
 				break
 			index_text = index_text + 1
 		text = " ".join(words[3:index_text+1])
+		
+		# Get the retweet count
 		retweet_count = words[index_text+1][15:-16]
 		
+		# Find the beginning and end of the tweet name
 		index_name_start = 0
 		index_name_end = 0
 		index = index_text + 2
 		for word in words[index:]:
 			if len(word) >= 6 and word[:6] == '<name>':
 				index_name_start = index
+				# Get rid of the <name> tag
 				words[index] = words[index][6:]
 			if len(word) >= 7 and word[-7:] == '</name>':
 				index_name_end = index
+				# Get rid of the </name> tag
 				words[index] = words[index][:-7]
 				break
 			index = index + 1
 		name = " ".join(words[index_name_start:index_name_end+1])
 
+		# Find the beginning and end of the tweet location
 		index_location_start = 0
 		index_location_end = 0
 		index = index_name_end + 1
 		for word in words[index:]:
 			if len(word) >= 10 and word[:10] == '<location>':
 				index_location_start = index
+				# Get rid of the <location> tag
 				words[index] = words[index][10:]
 			if len(word) >= 11 and word[-11:] == '</location>':
 				index_location_end = index
+				# Get rid of the </location> tag
 				words[index] = words[index][:-11]
 				break
 			index = index + 1
 		location = " ".join(words[index_location_start:index_location_end+1])
 		
+		# Find the beginning and end of the tweet description
 		index_description_start = 0
 		index_description_end = 0
 		index = index_location_end + 1
 		for word in words[index:]:
 			if len(word) >= 13 and word[:13] == '<description>':
 				index_description_start = index
+				# Get rid of the <description> tag
 				words[index] = words[index][13:]
 			if len(word) >= 14 and word[-14:] == '</description>':
 				index_description_end = index
+				# Get rid of the </description> tag
 				words[index] = words[index][:-14]
 				break
 			index = index + 1
 		description = " ".join(words[index_description_start:index_description_end+1])
 		
+		# Find the beginning and end of the tweet url
 		index_url_start = 0
 		index_url_end = 0
 		index = index_description_end + 1
 		for word in words[index:]:
 			if len(word) >= 5 and word[:5] == '<url>':
 				index_url_start = index
+				# Get rid of the <url> tag
 				words[index] = words[index][5:]
 			if len(word) >= 6 and word[-6:] == '</url>':
 				index_url_end = index
+				# Get rid of the </url> tag
 				words[index] = words[index][:-6]
 				break
 			index = index + 1
