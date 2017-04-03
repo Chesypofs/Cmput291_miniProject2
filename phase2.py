@@ -1,5 +1,6 @@
 from bsddb3 import db
 
+#Create a hash index on tweets.txt with tweet ids as keys and the full tweet record as data named tw.idx
 DATABASE = 'tw.idx'
 database = db.DB()
 database.open(DATABASE, None, db.DB_HASH, db.DB_CREATE)
@@ -14,6 +15,7 @@ while word:
     word = f.readline()
 database.close()  
 
+#Create a B+-tree index on terms.txt with terms as keys and tweet ids as data named te.idx
 DATABASE = 'te.idx'
 database = db.DB()
 database.set_flags(db.DB_DUP)
@@ -29,6 +31,7 @@ while word:
     word = f.readline()
 database.close() 
 
+#Create a B+-tree index on dates.txt with dates as keys and tweet ids as data named da.idx
 DATABASE = 'da.idx'
 database = db.DB()
 database.set_flags(db.DB_DUP)
