@@ -1,6 +1,13 @@
 import fileinput
 import re
 
+# Function phase1 reads a text file from stdin of tweets in
+# XML format and creates 3 files, terms.txt, dates.txt, and
+# tweets.txt where each line in terms.txt is of the form
+# term:tweet_id, each line in dates.txt is of the form
+# tweet_date:tweet_id, and each line in tweets.txt is of the
+# form tweet_id:tweet, where tweet is the full tweet record
+
 def phase1():
 	termsFile = open('terms.txt', 'w')
 	datesFile = open('dates.txt', 'w')

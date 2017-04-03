@@ -1,5 +1,7 @@
 from bsddb3 import db
 
+# Function phase3 gives an interface for the user to query the database
+# created in phase2.
 def phase3():
 	# Open the databases
 	tweetsDB = db.DB()
@@ -9,15 +11,21 @@ def phase3():
 	termsDB.open('te.idx',None,db.DB_BTREE,db.DB_CREATE)
 	datesDB.open('da.idx',None,db.DB_BTREE,db.DB_CREATE)
 
+	# Get the query from the user
 	while (True):
 		inp = input("Please enter a query or 'exit' to exit the program: ")
 		if inp == 'exit':
 			break
 
+		# Parse the query and display the results
 		results = parseAndSearch(inp, termsDB, datesDB)
 		tweets = getTweets(results, tweetsDB)
 		displayResults(tweets)
 
+# Function parseAndSearch splits the query into individual expressions
+# and gets the query results for each expression from the searchDates
+# and searchTerms functions. Those results are then aggregated and
+# duplicates removed. 
 def parseAndSearch(query, termsDB, datesDB):
 	results = []
 	finalResults = []
@@ -46,6 +54,7 @@ def parseAndSearch(query, termsDB, datesDB):
 					break
 			if foundAll:
 				finalResultsTemp.append(result)
+		# Remove duplicate tweets
 		for index1 in range(len(finalResultsTemp)):
 			foundDuplicate = False
 			for index2 in range(index1+1, len(finalResultsTemp)):
@@ -54,6 +63,7 @@ def parseAndSearch(query, termsDB, datesDB):
 			if not foundDuplicate:
 			   finalResults.append(finalResultsTemp[index1])
 	else:
+		# Remove duplicate tweets
 		for index1 in range(len(results[0])):
 			foundDuplicate = False
 			for index2 in range(index1+1, len(results[0])):
@@ -63,6 +73,8 @@ def parseAndSearch(query, termsDB, datesDB):
 			   finalResults.append(results[0][index1])
 	return finalResults
 
+# Function searchTerms searches the termsDB database using query query
+# and returns the results.
 def searchTerms(query, termsDB):
 	partialMatch = False
 	keys = []
@@ -71,6 +83,7 @@ def searchTerms(query, termsDB):
 	if query[-1] == '%':
 		partialMatch = True
 
+	# Create the keys
 	if len(query) >= 5 and query[:5] == 'text:':
 		keys.append('t-' + query[5:].lower())
 	elif len(query) >= 5 and query[:5] == 'name:':
@@ -89,6 +102,7 @@ def searchTerms(query, termsDB):
 			result = curs.set_range(key)
 			if result:
 				resultKey = result[0].decode('utf-8')
+				# Scan and add results until the prefix is no longer found
 				while len(resultKey) >= len(skey) and resultKey[:len(key)] == skey:
 					results.append(result)
 					result = curs.next()
@@ -97,6 +111,7 @@ def searchTerms(query, termsDB):
 		for key in keys:
 			key = key.encode('ascii','ignore')
 			result = curs.set(key)
+			# Add all the duplicates aswell
 			while result:
 				results.append(result)
 				result = curs.next_dup()
@@ -104,8 +119,9 @@ def searchTerms(query, termsDB):
 	curs.close()
 	return results
 
+# Function searchDates searches the datesDB database using query query
+# and returns the results.
 def searchDates(query, datesDB):
-
 	keys = []
 	results = []
 	curs = datesDB.cursor()
@@ -153,6 +169,8 @@ def searchDates(query, datesDB):
 	curs.close()
 	return results
 
+# Function getTweets searches the tweetsDB database for the tweets
+# with the ids in results and returns them.
 def getTweets(results, tweetsDB):
 	tweets = []
 	curs = tweetsDB.cursor()
